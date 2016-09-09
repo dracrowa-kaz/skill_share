@@ -1,0 +1,94 @@
+<script type="text/javascript">
+
+	$(function() {
+		var droppable = $("#droppable");
+ 		
+ 		//ファイルの解析結果が入る場所
+		var listString;
+        // File API が使用できない場合は諦めます.
+        if(!window.FileReader) {
+          alert("File API がサポートされていません。");
+          return false;
+        }
+ 
+        // イベントをキャンセルするハンドラです.
+        var cancelEvent = function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+ 
+        // dragenter, dragover イベントのデフォルト処理をキャンセルします.
+        droppable.bind("dragenter", cancelEvent);
+        droppable.bind("dragover", cancelEvent);
+
+		var handleDroppedFolder = function(event) {
+			event = event.originalEvent;
+			console.log("ファイルの読み取りを開始");
+		    event.preventDefault();
+		    var dataTransfer = event.dataTransfer;
+
+            console.log(dataTransfer);
+		    // DataTransferオブジェクトからDataTransferItemListを参照
+		    if (dataTransfer && dataTransfer.items){
+		        var items = dataTransfer.items,
+		            len = items.length;
+		        // ドロップされたファイルが一つかチェック
+		        if (len === 1) {
+		            var item = items[0], entry;
+		            // HTML5標準
+	                entry = item.webkitGetAsEntry();
+
+		            // Entryをパース
+		            traverseEntry(entry);
+		        } else {
+		            alert("フォルダを1つだけドロップしてください！");
+		        }
+		    }
+		}
+ 
+		var traverseEntry = function(entry){
+		    switch (true) {
+		        // ファイルの場合
+		        case (entry.isFile):
+		            // entryのパスをリストに追加。
+		            // 改行コードはwindowsの場合は、"\r\n"にする必要あり
+		            listString += entry.fullPath + "\n";
+		            break;
+		        // ディレクトリの場合
+		        case (entry.isDirectory):
+		            var reader = entry.createReader();
+		            // ディレクトリ内容の読み取り
+		            reader.readEntries(
+		                // 読み取り成功
+		                function(results) {
+		                    // 再帰処理
+		                    for (var i = 0, len = results.length; i < len; i++) {
+		                        traverseEntry(results[i]);
+		                    }
+		                },
+		                // 読み取り失敗
+		                function(error) {
+		                    alert("読み込みに失敗しました。");
+		                }
+		            );
+		            break;
+		    }
+
+		    //ul要素に追加
+			$('#ul_file_list').prepend("<li>" + entry.fullPath + "</li>");
+		}
+
+        // ドロップ時のイベントハンドラを設定します.
+        droppable.bind("drop", handleDroppedFolder);
+
+	});
+
+</script>
+
+<h1  class="text_center">Skill-share project</h1>
+<p class="text_center">開発中</p>
+<div id="droppable" style="border: gray solid 1em; padding: 2em;">
+  ファイルをドロップしてください。
+</div>
+<ul id="ul_file_list"></ul>
