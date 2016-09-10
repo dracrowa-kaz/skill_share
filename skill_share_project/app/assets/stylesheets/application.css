@@ -40,3 +40,28 @@ nav {
 .text_center{
 	text-align: center;
 }
+
+.scr_folder_list{
+  overflow: scroll;   /* スクロール表示 */ 
+  width: 400px;
+  height: 300px;
+  background-color: red;
+}
+
+.border_block {
+    padding: 10 0 10 0px;
+    background: #fff;
+    border: 1px #ccc solid;
+    box-shadow: 0 2px 3px 0 #ddd;
+    -moz-box-shadow: 0 2px 3px 0 #ddd;
+    -webkit-box-shadow: 0 2px 3px 0 #ddd;
+    font-size: 50%;
+}
+
+.float_left{
+    float: left;
+}
+
+.margin_left{
+    margin-left: 15px;
+}
